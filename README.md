@@ -1,3 +1,7 @@
+# Authors
+Chenyi Xiang, Kaiwen Shao
+
+
 # Prerequisites
 
 This project depends on numpy. In a Homebrew-managed Python environment, to install numpy without system conflicts, either:
