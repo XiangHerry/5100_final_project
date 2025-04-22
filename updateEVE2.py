@@ -3,6 +3,7 @@ import random
 import logging
 import numpy as np
 from collections import defaultdict
+import matplotlib.pyplot as plt
 
 # Set up logging configuration
 logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -242,9 +243,64 @@ def train_and_evaluate(episodes=200):
     logging.info("Training completed.")
     return (b_r, b_wait, b_idle), agent, metrics
 
+
+def plot_metrics(baseline_results, metrics):
+    # Unpack baseline metrics: (total_reward, cumulative_wait_time, idle_move_count)
+    b_r, b_wait, b_idle = baseline_results
+
+    # Extract per-episode data from metrics list
+    episodes   = [m[0] for m in metrics]  # episode indices
+    rewards    = [m[1] for m in metrics]  # total reward per episode
+    wait_times = [m[2] for m in metrics]  # cumulative wait time per episode
+    idle_moves = [m[3] for m in metrics]  # idle move count per episode
+
+    # 1. Plot total reward over episodes
+    plt.figure()
+    # Use a solid line with circle markers for the RL agent’s rewards
+    plt.plot(episodes, rewards,
+             linestyle='-', marker='o',
+             label='RL Agent Reward')
+    plt.xlabel('Episode')
+    plt.ylabel('Total Reward')
+    plt.title('Total Reward vs. Episode')
+    plt.grid(True)
+    plt.legend()
+
+    # 2. Compare average waiting time: Baseline vs. RL agent
+    avg_wait_rl = sum(wait_times) / len(wait_times)
+    plt.figure()
+    # Bar chart: Baseline in gray, RL agent in skyblue
+    plt.bar(['Baseline', 'RL Agent'],
+            [b_wait, avg_wait_rl],
+            color=['gray', 'skyblue'])
+    plt.ylabel('Cumulative Wait Time')
+    plt.title('Baseline vs. RL: Average Wait Time')
+
+    # 3. Compare idle moves over episodes
+    plt.figure()
+    # RL agent: solid blue line with circle markers
+    plt.plot(episodes, idle_moves,
+             linestyle='-', marker='o',
+             label='RL Agent Idle Moves')
+    # Baseline: single horizontal dashed line in black
+    plt.hlines(b_idle,
+               xmin=episodes[0], xmax=episodes[-1],
+               colors='black', linestyles='--',
+               label='Baseline Idle Moves')
+    plt.xlabel('Episode')
+    plt.ylabel('Idle Moves')
+    plt.title('Idle Moves: RL Agent vs. Baseline')
+    plt.grid(True)
+    plt.legend()
+
+    # Display all figures
+    plt.show()
+
+
 if __name__ == "__main__":
     baseline_results, agent, metrics = train_and_evaluate(episodes=100)
     # Re-print baseline at end to ensure visibility
     b_r, b_wait, b_idle = baseline_results
     logging.info(f"Baseline (final): Reward={b_r}, WaitTime={b_wait}, IdleMoves={b_idle}")
     # metrics can be saved or plotted for result analysis
+    plot_metrics(baseline_results, metrics)

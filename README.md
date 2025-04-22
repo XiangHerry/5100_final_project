@@ -7,10 +7,8 @@ Create and activate a virtual environment:
 python3 -m venv venv
 source venv/bin/activate
 pip install numpy
+pip install numpy matplotlib     
 
-Install as user:
-
-python3 -m pip install --user numpy
 
 # Data Generation and Simulation
 
